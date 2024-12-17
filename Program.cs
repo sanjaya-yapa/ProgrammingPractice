@@ -19,5 +19,9 @@ Console.WriteLine("4. Diagonal Difference");
 // diagonalDifference.execute();
 
 Console.WriteLine("5. Plus Minus");
-PlusMinusChallange plusMinusChallange = new PlusMinusChallange();
-plusMinusChallange.execute();
+// PlusMinusChallange plusMinusChallange = new PlusMinusChallange();
+// plusMinusChallange.execute();
+
+Console.WriteLine("6. Stair Case");
+StairCase stairCase = new StairCase();
+stairCase.execute();
