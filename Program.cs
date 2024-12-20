@@ -23,5 +23,9 @@ Console.WriteLine("5. Plus Minus");
 // plusMinusChallange.execute();
 
 Console.WriteLine("6. Stair Case");
-StairCase stairCase = new StairCase();
-stairCase.execute();
+// StairCase stairCase = new StairCase();
+// stairCase.execute();
+
+Console.WriteLine("7. Min Max Sum");
+MinMaxSum minMaxSum = new MinMaxSum();
+minMaxSum.execute();
