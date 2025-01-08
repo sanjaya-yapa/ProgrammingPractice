@@ -1,0 +1,163 @@
+
+### Explanation of the Climbing Leaderboard Problem
+
+#### Problem Summary
+The task is to calculate a player's rank in a leaderboard, which involves:
+1. Removing duplicate scores from the leaderboard to get distinct scores.
+2. Calculating the rank of each player's score based on its position in the leaderboard.
+
+The challenge is to do this efficiently, given that both the leaderboard (`ranked`) and the player's scores (`player`) can be large.
+
+---
+
+#### Option 01: Nested Loop Approach
+This approach iterates over the distinct leaderboard scores for each player's score to determine the rank.
+
+- **How it works**:
+  - For each score in `player`, iterate over the `distinctScores` until a score greater than or equal to the player's score is found.
+  - Count the number of scores traversed to determine the rank.
+  
+- **Code Snippet**:
+  ```csharp
+  foreach(int score in player)
+  {
+      int rank = 1;
+      foreach(int distinctScore in distinctScores)
+      {
+          if(score >= distinctScore)
+          {
+              break;
+          }
+          rank++;
+      }
+      playerRanks.Add(rank);
+  }
+  ```
+
+- **Time Complexity**:
+  - Outer loop over `player`: \(O(m)\)
+  - Inner loop over `distinctScores`: \(O(n)\)
+  - Total: \(O(m 	imes n)\)
+
+This is inefficient for large datasets.
+
+---
+
+#### Option 02: Binary Search Approach
+This uses the `BinarySearch` method to efficiently find the rank of each player's score.
+
+- **How it works**:
+  - Sort `distinctScores` in descending order.
+  - Use `BinarySearch` to locate the player's score in the sorted list.
+  - If the score isn't found, calculate its insertion point using `~index`.
+
+- **Code Snippet**:
+  ```csharp
+  foreach(int score in player)
+  {
+      int index = distinctScores.BinarySearch(score);
+      if(index < 0)
+      {
+          index = ~index;
+      }
+      playerRanks.Add(index + 1);
+  }
+  ```
+
+- **Time Complexity**:
+  - Binary search for each player's score: \(O(\log n)\)
+  - Total: \(O(m \log n)\)
+
+- **Issue**:
+  - `BinarySearch` assumes the list is in ascending order. Since `distinctScores` is sorted in descending order, it doesn't work as expected.
+
+---
+
+#### Corrected Binary Search for Descending Order
+To make binary search work with a descending order list, adjust the logic or use a custom binary search.
+
+- **Custom Binary Search**:
+  ```csharp
+  foreach (int score in player)
+  {
+      int left = 0, right = distinctScores.Count - 1;
+      while (left <= right)
+      {
+          int mid = left + (right - left) / 2;
+          if (distinctScores[mid] == score)
+          {
+              left = mid;
+              break;
+          }
+          else if (distinctScores[mid] < score)
+          {
+              right = mid - 1;
+          }
+          else
+          {
+              left = mid + 1;
+          }
+      }
+      playerRanks.Add(left + 1);
+  }
+  ```
+
+---
+
+#### Two-Pointer Approach
+An alternative to `BinarySearch` is the two-pointer approach.
+
+- **How it works**:
+  - Start a pointer `i` at the end of `distinctScores`.
+  - For each player's score:
+    - Decrease `i` while the player's score is greater than or equal to `distinctScores[i]`.
+    - Calculate the rank as `i + 2` (explained below).
+
+- **Code Snippet**:
+  ```csharp
+  int i = distinctScores.Count - 1;
+  foreach (int score in player)
+  {
+      while (i >= 0 && score >= distinctScores[i])
+      {
+          i--;
+      }
+      playerRanks.Add(i + 2);
+  }
+  ```
+
+---
+
+#### Why Add `2` in `i + 2`?
+- `i` is a 0-based index.
+- After the loop, `i` points to the position just below the rank of the player's score.
+- `+1` converts the 0-based index to 1-based.
+- Another `+1` accounts for the player's position being one rank above where the pointer stops.
+
+For example:
+- If `i = 2` (0-based), the rank is `i + 2 = 4` (1-based).
+
+---
+
+#### Efficiency of the Two-Pointer Approach
+- Each score in `distinctScores` and `player` is processed once.
+- Time complexity: \(O(n + m)\).
+- This is the most efficient solution.
+
+---
+
+#### Example Walkthrough
+**Inputs**:
+- `ranked`: `[100, 100, 50, 40, 40, 20, 10]`
+- `player`: `[5, 25, 50, 120]`
+
+**Execution**:
+1. `distinctScores`: `[100, 50, 40, 20, 10]`
+2. For `player` scores:
+   - `5`: Pointer stops at the end → Rank: `6`
+   - `25`: Pointer stops at `20` → Rank: `4`
+   - `50`: Pointer stops at `50` → Rank: `2`
+   - `120`: Pointer stops at the start → Rank: `1`
+
+**Output**:
+- Player ranks: `[6, 4, 2, 1]`
